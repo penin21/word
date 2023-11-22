@@ -1,0 +1,26 @@
+.container {
+    display:flex;
+    flex-wrap: wrap;
+    justify-content: start;
+    /* align-items: center; */
+    margin-left: 25%;
+}
+
+.container2 {
+    /* display:flex;
+    justify-content: center; */
+    /* align-items: center; */
+    /* margin-right: 300px; */
+}
+
+#copy-btn {
+    /* margin-top:5px; */
+    font-size: 50px;
+    margin-left:5px;
+    height: 100px;
+    margin-bottom: 6.5px;
+  }
+
+body {
+    box-sizing: border-box;
+}

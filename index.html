@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="1.css">
+    <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">  -->
+</head>
+
+
+<body>
+  
+
+
+<div class="container">
+  <div class="box-1">
+  <form id="form-submit">
+  <input style=" width: 300px; height: 100px; font-size: 50px; text-align: center;" id="word" type="text" placeholder="Enter a word">
+  <input style="font-size: 50px; height: 100px;text-align: center;" type="submit">
+  </form>
+  
+  </div>
+  <div>
+  <button id="copy-btn">복사</button>
+</div>
+<div style="width: 100%; height: 0px; background-color: red;"></div>
+<div style="text-align: left;">
+  <ul id="list">
+  </ul>
+</div>
+</div>
+
+
+  
+  
+</div>
+  
+</div>
+
+
+
+
+<script>
+
+  document.querySelector('#form-submit').addEventListener('submit',function(e){
+    e.preventDefault();
+
+    document.querySelector('#list').innerHTML =''; 
+    // 위와 같이 더 쉬운 방법이 존재하긴 했군
+    // document.querySelector('#list').innerHTML.remove(); 이건 먹히지 않는다. 위처럼 ='';로 두는 간단한 방법이 있음
+
+    // var goaway = document.getElementById("list");
+    // while ( goaway.hasChildNodes() )
+    // {
+    // goaway.removeChild( goaway.firstChild );       
+    // }
+    
+    
+
+   fetch('http://15.165.130.0:1234/premium/wordsearch2?word='+document.querySelector('#word').value.trim())
+  .then(res => res.json())
+  .then(function(data){ 
+
+      var result = data['items'].find(function(rkqt){return rkqt.word.trim().toUpperCase() === document.querySelector('#word').value.trim().toUpperCase()});
+      
+      fetch('http://15.165.130.0:1234/premium/meaning?masterId='+result['id'])
+      .then(res => res.json())
+      .then(function(data){ 
+
+       
+      
+       data.forEach((array) => {
+            
+          
+          fetch('http://15.165.130.0:1234/premium/loadpartsbyMeaningId?meaningId='+ array['id'])
+          .then(res => res.json())
+          .then(function(datum){
+            // console.log(datum.map(el => el['partcode'] +" "+ el['partmeaning']))
+            var li = document.createElement("li");
+            var ul = document.createElement("ul");
+            // ul.textContent = datum.map(el => el['partcode'] +" "+ el['partmeaning']);
+
+            if(array['level_to']==1) {
+              array['level_to']="[초저]";
+            } else if (array['level_to']==2) {
+              array['level_to']="[초고]";
+            } else if (array['level_to']==3) {
+              array['level_to']="[중기]";
+            } else if (array['level_to']==4) {
+              array['level_to']="[중심]";
+            } else if (array['level_to']==5) {
+              array['level_to']="[고기]";
+            } else if (array['level_to']==6) {
+              array['level_to']="[고심]";
+            } else if (array['level_to']==7) {
+              array['level_to']="[공무원]";
+            }
+            
+           
+            
+          
+
+            li.textContent = array['level_to'] +" "+ datum.map(el => "("+ el['partcode'] +") "+ el['partmeaning']);
+            list.appendChild(li);
+            
+
+            })
+
+
+          })
+      })
+      
+
+  })
+
+
+
+})
+
+document.querySelector('#copy-btn').addEventListener('click', function() {
+
+     txt = document.querySelector('#list').innerText;
+     t = document.createElement("textarea");
+     document.body.appendChild(t);
+     t.textContent = txt;
+     t.select();
+     console.log(document.querySelector('#list').textContent)
+     document.execCommand('copy');
+     document.body.removeChild(t);
+     
+    })
+    
+ </script>
+  
+</body>
+
+</html>
